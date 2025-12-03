@@ -1,0 +1,42 @@
+{
+  "name": "orcamento-api",
+  "version": "1.0.0",
+  "description": "API Express para geração de orçamentos com React SSR e Tailwind CSS v4",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "setup-python": "pip install weasyprint",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "express",
+    "react",
+    "ssr",
+    "tailwind",
+    "orcamento"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "@babel/preset-react": "^7.22.0",
+    "@babel/register": "^7.22.0",
+    "@tailwindcss/cli": "^4.1.6",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "express-rate-limit": "^7.1.5",
+    "fs-extra": "^11.1.1",
+    "lucide-react": "^0.555.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "autoprefixer": "^10.4.22",
+    "nodemon": "^3.0.1",
+    "tailwindcss": "^3.4.18"
+  }
+}

@@ -71,7 +71,8 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
   } = customer || {};
 
   // Dados da organização/empresa
-  const empresa = organization?.name || {
+
+  const empresa = organization || {
     name: "SUA EMPRESA LTDA.",
     address: {
       street: "RUA DAS  EMPRESAS, 123",
@@ -220,32 +221,50 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
     })
     .filter((cat) => cat.total > 0);
 
+  const formatarZipcode = (zipcode) => {
+    if (!zipcode) return "";
+    return zipcode.replace(/(\d{5})(\d{3})/, "$1-$2");
+  };
+
   return (
     <div className="orcamento-container">
       {/* Dados da empresa */}
-      <div className="page-break-avoid header-section flex gap-2 border-b pb-1">
+      <div className="page-break-avoid header-section flex gap-2 border-b pb-1 items-center">
         <img
           src={
             empresa.logoUrl ||
             "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/768px-LEGO_logo.svg.png"
           }
           alt="Logo da Empresa"
-          className="w-20 h-w-20 bg-red-400 object-cover aspect-square rounded-md"
+          className="w-20 h-20 bg-red-400 object-cover aspect-square rounded-md"
         />
         <div className="w-full">
           <h1 className="text-xl font-bold text-gray-900">
             {empresa.name || empresa.nome || "Sua Empresa Ltda."}
           </h1>
-          <div className="text-xs text-gray-600 grid grid-cols-2">
-            <div>
-              <p>{empresa.address?.street}</p>
-              <p>{`${empresa.address?.city} - ${empresa.address?.state}`}</p>
-              <p>{`CEP: ${empresa.address?.zipcode}`}</p>
+          <div className="text-xs text-gray-700 flex gap-4">
+            <div className="w-auto">
+              <p>
+                {empresa.address?.street} -{" "}
+                <span className="text-gray-500">{empresa.address?.number}</span>{" "}
+                -{" "}
+                <span className="text-gray-500">
+                  {empresa.address?.complement}
+                </span>
+              </p>
+              <p>
+                {empresa.address?.neighborhood} - {empresa.address?.city}
+                <span className="text-gray-500">/{empresa.address?.state}</span>
+              </p>
+              <p>{`${formatarZipcode(empresa.address?.zipcode)}`}</p>
             </div>
-            <div>
-              <p>{`Tel: ${empresa.phone}`}</p>
+            <div className="min-w-fit">
+              <p>{`Tel: ${formatarTelefone(empresa.phone)}`}</p>
               <p>{`Email: ${empresa.email}`}</p>
-              <p>{`CNPJ: ${empresa.document || empresa.cnpj}`}</p>
+              <p>{`CNPJ: ${formatarDocumento(
+                empresa.document || empresa.cnpj,
+                "cnpj"
+              )}`}</p>
             </div>
           </div>
         </div>
@@ -293,18 +312,7 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
                 </div>
               </div>
               <div className="">
-                <div className="flex items-center gap-2">
-                  <Clock className="text-muted-foreground h-4 w-4" />
-                  <div>
-                    <span className="text-muted-foreground text-sm">
-                      Previsão de Conclusão
-                    </span>
-                    <p className="font-bold">
-                      {formatarData(estimated_completion)}
-                    </p>
-                  </div>
-                </div>
-                {start_date && (
+                {/* {start_date && (
                   <div className="flex items-center gap-2">
                     <Calendar className="text-muted-foreground h-4 w-4" />
                     <div>
@@ -314,7 +322,7 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
                       <p className="font-bold">{formatarData(start_date)}</p>
                     </div>
                   </div>
-                )}
+                )} */}
                 <div className="flex items-center gap-2">
                   <Calendar className="text-muted-foreground h-4 w-4" />
                   <div>
@@ -323,6 +331,17 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
                     </span>
                     <p className="font-bold">
                       {created_at ? formatarData(created_at) : "N/A"}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="text-muted-foreground h-4 w-4" />
+                  <div>
+                    <span className="text-muted-foreground text-sm">
+                      Previsão de Conclusão
+                    </span>
+                    <p className="font-bold">
+                      {formatarData(estimated_completion)}
                     </p>
                   </div>
                 </div>
@@ -479,84 +498,74 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
 
       {/* Resumo por categoria */}
       {/* Total geral */}
-      <div className="page-break-avoid grid grid-cols-2 gap-2">
-        {totalCategorias >= 3 && (
-          <div className="w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b">
-              Resumo por Categoria
-            </h3>
-            <div className="border border-gray-300 rounded-md overflow-hidden">
-              <table className="w-full border-collapse text-xs">
-                <thead>
-                  <tr className="bg-gray-100">
-                    <th className="p-2 text-center border-b border-gray-300">
-                      Item
-                    </th>
-                    <th className="p-2 text-left border-b border-gray-300">
-                      Categoria
-                    </th>
-                    <th className="p-2 text-right border-b border-gray-300">
-                      Total
-                    </th>
+      <div className={"grid grid-cols-2 gap-4 mb-4 gap-y-0"}>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 border-b col-start-1">
+          Resumo por Categoria
+        </h3>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2 border-b col-start-2">
+          Total Geral
+        </h3>
+        <div className="border border-gray-300 rounded-md overflow-hidden col-start-1">
+          <table className="w-full border-collapse text-xs">
+            <thead>
+              <tr className="bg-gray-100 w-full">
+                <th className="p-2 text-center border-b border-gray-300">
+                  Item
+                </th>
+                <th className="p-2 text-left border-b border-gray-300">
+                  Categoria
+                </th>
+                <th className="p-2 text-right border-b border-gray-300">
+                  Total
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {totalPorCategoria.map((categoria, index) => {
+                return (
+                  <tr
+                    key={categoria.categoria}
+                    className="border-b border-gray-300 last:border-0"
+                  >
+                    <td
+                      className="p-2 font-medium text-gray-700 w-[10%] text-center"
+                      width={10}
+                    >
+                      {index + 1}
+                    </td>
+                    <td className="p-2 font-medium text-gray-700">
+                      {traduzirCategoria(categoria.categoria)}
+                    </td>
+                    <td className="p-2 text-right font-bold text-gray-900">
+                      {formatarMoeda(categoria.total)}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {totalPorCategoria.map((categoria, index) => {
-                    return (
-                      <tr
-                        key={categoria.categoria}
-                        className="border-b border-gray-300 last:border-0"
-                      >
-                        <td
-                          className="p-2 font-medium text-gray-700 w-[10%] text-center"
-                          width={10}
-                        >
-                          {index + 1}
-                        </td>
-                        <td className="p-2 font-medium text-gray-700">
-                          {traduzirCategoria(categoria.categoria)}
-                        </td>
-                        <td className="p-2 text-right font-bold text-gray-900">
-                          {formatarMoeda(categoria.total)}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div className="bg-blue-50 p-4 rounded-md col-start-2 w-full">
+          <div className="flex justify-between text-sm">
+            <span className="text-gray-700">Subtotal:</span>
+            <span className="font-medium">{formatarMoeda(subtotal)}</span>
           </div>
-        )}
 
-        <div className="total-section w-full h-full flex flex-col col-start-2">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b">
-            Total Geral
-          </h3>
-          <div className=" bg-blue-50 p-4 rounded-lg h-full flex flex-col justify-end">
-            <div className="space-y-2">
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-700">Subtotal:</span>
-                <span className="font-medium">{formatarMoeda(subtotal)}</span>
+          {descontoValor > 0 && (
+            <>
+              <div className="flex justify-between text-sm text-red-600">
+                <span>Desconto ({traduzirTipoDesconto(discount_type)}):</span>
+                <span className="font-medium">
+                  -{formatarMoeda(descontoValor)}
+                </span>
               </div>
+            </>
+          )}
 
-              {descontoValor > 0 && (
-                <>
-                  <div className="flex justify-between text-sm text-red-600">
-                    <span>
-                      Desconto ({traduzirTipoDesconto(discount_type)}):
-                    </span>
-                    <span className="font-medium">
-                      -{formatarMoeda(descontoValor)}
-                    </span>
-                  </div>
-                </>
-              )}
-
-              <div className="flex justify-between py-2 border-t-2 border-blue-900 text-lg font-bold text-blue-900">
-                <span>Total Geral:</span>
-                <span>{formatarMoeda(totalFinal)}</span>
-              </div>
-            </div>
+          <div className="flex justify-between py-2 border-t-2 border-blue-900 text-lg font-bold text-blue-900">
+            <span>Total Geral:</span>
+            <span>{formatarMoeda(totalFinal)}</span>
           </div>
         </div>
       </div>

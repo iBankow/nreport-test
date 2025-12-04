@@ -230,7 +230,26 @@ app.get("/service-order/preview", async (req, res) => {
         created_at: "2025-12-01T23:21:50.017Z",
         updated_at: "2025-12-01T23:21:50.017Z",
       },
-      organization: null,
+      organization: {
+        id: "44e90d26-ccc5-4d87-a9f8-260fc0373447",
+        name: "NOME DA ORG LTDA",
+        description: "ORGANIZAÇÃO DE NOME TESTE",
+        deleted_at: null,
+        created_at: "2025-11-27T01:34:40.840Z",
+        updated_at: "2025-12-03T23:05:42.487Z",
+        document: "12312312000128",
+        phone: "65984402010",
+        email: "ASDADS@EMAIL.COM",
+        address: {
+          city: "CUYABA",
+          state: "MT",
+          number: "231",
+          street: "RUAS ASDA AA",
+          zipcode: "00219111",
+          complement: "ED AS EMPRES",
+          neighborhood: "CENTRO NORTE DO SUL",
+        },
+      },
     };
 
     // Gerar componente React usando a variável data
@@ -267,7 +286,6 @@ app.post("/service-order/gerar/pdf", async (req, res) => {
     const customer = dadosRecebidos.customer || {};
     const items = dadosRecebidos.items || [];
     const organization = dadosRecebidos.organization || {};
-
     // Gerar componente React com a nova estrutura de props
     const component = React.createElement(OrcamentoComponent, {
       order,
@@ -291,7 +309,7 @@ app.post("/service-order/gerar/pdf", async (req, res) => {
     const serviceOrderData = {
       numero: order.number || order.sid || order.id,
       data: new Date(order.created_at).toLocaleDateString("pt-BR"),
-      empresa: organization.name || organization.nome || "Sua Empresa Ltda",
+      empresa: organization.name || "Sua Empresa Ltda",
       cliente: customer.name || "N/A",
     };
 

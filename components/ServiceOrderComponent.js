@@ -232,8 +232,9 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
       <div className="page-break-avoid header-section flex gap-2 border-b pb-1 items-center">
         <img
           src={
-            empresa.logoUrl ||
-            "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/768px-LEGO_logo.svg.png"
+            empresa.logo
+              ? `http://localhost:3333/api/v1/uploads/` + empresa.logo
+              : "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/LEGO_logo.svg/768px-LEGO_logo.svg.png"
           }
           alt="Logo da Empresa"
           className="w-20 h-20 bg-red-400 object-cover aspect-square rounded-md"

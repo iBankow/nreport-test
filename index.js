@@ -140,7 +140,7 @@ app.get("/service-order/preview", async (req, res) => {
       discount_value: 12,
       sub_total: 23496,
       total: 20676,
-      estimated_completion: null,
+      estimated_at: null,
       start_date: "2025-12-01T23:27:59.814Z",
       end_date: null,
       deleted_at: null,

@@ -31,7 +31,7 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
     total,
     discount_type,
     discount,
-    estimated_completion,
+    estimated_at,
     start_date,
     end_date,
     created_at,
@@ -342,7 +342,7 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
                       Previsão de Conclusão
                     </span>
                     <p className="font-bold">
-                      {formatarData(estimated_completion)}
+                      {formatarData(estimated_at)}
                     </p>
                   </div>
                 </div>
@@ -408,7 +408,7 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
       </div>
 
       {/* Cronograma (se houver datas) */}
-      {/* {(start_date || end_date || estimated_completion) && (
+      {/* {(start_date || end_date || estimated_at) && (
         <div className="page-break-avoid">
           <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b">
             Cronograma do Serviço
@@ -426,11 +426,11 @@ const ServiceOrderComponent = ({ order, customer, items, organization }) => {
                 <p className="text-blue-700">{formatarDataHora(end_date)}</p>
               </div>
             )}
-            {estimated_completion && (
+            {estimated_at && (
               <div>
                 <p className="font-medium text-blue-900">Previsão de Entrega</p>
                 <p className="text-blue-700">
-                  {formatarDataHora(estimated_completion)}
+                  {formatarDataHora(estimated_at)}
                 </p>
               </div>
             )}

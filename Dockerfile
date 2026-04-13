@@ -22,8 +22,8 @@ COPY package*.json ./
 RUN npm ci --only=production && \
     npm ci --only=development
 
-# Instalar dependências Python
-RUN pip install --no-cache-dir weasyprint
+# Instalar dependências Python (usar --break-system-packages é seguro em Docker)
+RUN pip install --no-cache-dir --break-system-packages weasyprint
 
 # Copiar código-fonte
 COPY . .
@@ -48,7 +48,7 @@ COPY --from=builder /app/package*.json ./
 COPY --from=builder /app . 
 
 # Instalar apenas WeasyPrint no runtime (usa wheels do builder)
-RUN pip install --no-cache-dir weasyprint
+RUN pip install --no-cache-dir --break-system-packages weasyprint
 
 # Criar diretório para PDFs
 RUN mkdir -p /app/pdfs /app/temp

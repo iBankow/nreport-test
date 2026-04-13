@@ -38,8 +38,16 @@ RUN apk add --no-cache \
     python3 \
     py3-pip \
     cairo \
+    cairo-gobject \
+    fontconfig \
+    freetype \
+    glib \
+    gobject-introspection \
     jpeg \
+    libffi \
     openjpeg \
+    pango \
+    ttf-dejavu \
     zlib
 
 # Copiar do builder: node_modules, arquivo de dependências e código

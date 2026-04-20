@@ -6,7 +6,7 @@ import {
 } from "../utils";
 
 export function Header({ organization, sid, type }) {
-  const empresa = organization || {
+  const company = organization || {
     id: "00000000-00000-0000-0000-000000000000",
     name: "SUA EMPRESA LTDA.",
     description: "ORGANIZAÇÃO DE NOME TESTE",
@@ -29,33 +29,44 @@ export function Header({ organization, sid, type }) {
   const headerContent =
     type === "order" ? `Ordem de Serviço #${count}` : `Orçamento #${count}`;
 
+  function generateLogoUrl() {
+    if (company.logo) {
+      const fileExtension = `_64x64` + company.logo.slice(-4);
+
+      const baseUrl = company.logo.slice(0, -4);
+
+      return process.env.CDN_URL + "/" + baseUrl + fileExtension;
+    }
+
+    return null;
+  }
+
   return (
     <>
       <p className="header header-left">{headerContent}</p>
       <p className="header header-right">Data de emissão: {currentDate}</p>
       <div className="page-break-avoid header-section flex gap-2">
-        <img
-          src={
-            empresa.logo ||
-            "https://img.freepik.com/vetores-gratis/vetor-de-gradiente-de-logotipo-colorido-de-passaro_343694-1365.jpg?semt=ais_hybrid&w=740&q=80"
-          }
-          alt="Logo da Empresa"
-          className="w-20 object-cover aspect-square rounded-md"
-        />
+        <div className="size-20 overflow-hidden">
+          <img
+            src={generateLogoUrl()}
+            alt="Logo da Empresa"
+            className="w-full object-cover aspect-square rounded-md"
+          />
+        </div>
         <div className="w-full">
           <h1 className="text-xl font-bold text-gray-900">
-            {empresa.name.toUpperCase()}
+            {company.name.toUpperCase()}
           </h1>
           <div className="text-xs text-gray-600 grid grid-cols-2">
             <div>
-              <p>{empresa.address?.street}</p>
-              <p>{`${empresa.address?.city} - ${empresa.address?.state}`}</p>
-              <p>{`CEP: ${formatZipCode(empresa.address?.zipcode)}`}</p>
+              <p>{company.address?.street}</p>
+              <p>{`${company.address?.city} - ${company.address?.state}`}</p>
+              <p>{`CEP: ${formatZipCode(company.address?.zipcode)}`}</p>
             </div>
             <div>
-              <p>{`Tel: ${formatPhone(empresa.phone)}`}</p>
-              <p>{`Email: ${empresa.email.toLowerCase()}`}</p>
-              <p>{`CNPJ: ${formatDocument(empresa.document)}`}</p>
+              <p>{`Tel: ${formatPhone(company.phone)}`}</p>
+              <p>{`Email: ${company.email.toLowerCase()}`}</p>
+              <p>{`CNPJ: ${formatDocument(company.document)}`}</p>
             </div>
           </div>
         </div>

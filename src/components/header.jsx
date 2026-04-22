@@ -1,11 +1,9 @@
-import {
-  formatDate,
-  formatDocument,
-  formatPhone,
-  formatZipCode,
-} from "../utils";
+import { formatDocument, formatPhone, formatZipCode } from "../utils";
 
-export function Header({ organization, sid, type }) {
+const IMG_FALLBACK =
+  "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODgiIGhlaWdodD0iODgiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgc3Ryb2tlPSIjMDAwIiBzdHJva2UtbGluZWpvaW49InJvdW5kIiBvcGFjaXR5PSIuMyIgZmlsbD0ibm9uZSIgc3Ryb2tlLXdpZHRoPSIzLjciPjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjU2IiByeD0iNiIvPjxwYXRoIGQ9Im0xNiA1OCAxNi0xOCAzMiAzMiIvPjxjaXJjbGUgY3g9IjUzIiBjeT0iMzUiIHI9IjciLz48L3N2Zz4KCg==";
+
+export function Header({ organization }) {
   const company = organization || {
     id: "00000000-00000-0000-0000-000000000000",
     name: "SUA EMPRESA LTDA.",
@@ -24,11 +22,6 @@ export function Header({ organization, sid, type }) {
     },
   };
 
-  const currentDate = formatDate(new Date().toISOString());
-  const count = sid || "00001/2026";
-  const headerContent =
-    type === "order" ? `Ordem de Serviço #${count}` : `Orçamento #${count}`;
-
   function generateLogoUrl() {
     if (company.logo) {
       const fileExtension = `_64x64` + company.logo.slice(-4);
@@ -38,30 +31,30 @@ export function Header({ organization, sid, type }) {
       return process.env.CDN_URL + "/" + baseUrl + fileExtension;
     }
 
-    return null;
+    return IMG_FALLBACK;
   }
 
   return (
     <>
-      <p className="header header-left">{headerContent}</p>
-      <p className="header header-right">Data de emissão: {currentDate}</p>
-      <div className="page-break-avoid header-section flex gap-2">
-        <div className="size-20 overflow-hidden">
+      <div className="page-break-avoid flex gap-2 mb-2">
+        <div className="size-20 overflow-hidden rounded-md">
           <img
             src={generateLogoUrl()}
             alt="Logo da Empresa"
-            className="w-full object-cover aspect-square rounded-md"
+            className="w-full h-full object-cover bg-primary/50"
           />
         </div>
-        <div className="w-full">
+        <div className="w-full flex-1">
           <h1 className="text-xl font-bold text-gray-900">
             {company.name.toUpperCase()}
           </h1>
           <div className="text-xs text-gray-600 grid grid-cols-2">
             <div>
-              <p>{company.address?.street}</p>
-              <p>{`${company.address?.city} - ${company.address?.state}`}</p>
-              <p>{`CEP: ${formatZipCode(company.address?.zipcode)}`}</p>
+              <p>
+                {`${company.address?.street}, ${company.address?.number} - ${company.address?.complement}`}
+              </p>
+              <p>{`${company.address?.city} - ${company.address?.neighborhood} - ${company.address?.state}`}</p>
+              <p>{`${formatZipCode(company.address?.zipcode)}`}</p>
             </div>
             <div>
               <p>{`Tel: ${formatPhone(company.phone)}`}</p>

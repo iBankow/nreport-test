@@ -4,7 +4,7 @@
 
 @page {
   size: A4;
-  margin: 10mm 5mm 10mm 5mm;
+  margin: 5mm;
 
   @top-left {
     content: element(header-left);
@@ -17,9 +17,11 @@
   @bottom-left {
     content: element(footer-left);
   }
+
   @bottom-center {
     content: element(footer-center);
   }
+
   @bottom-right {
     content: element(footer-right);
   }
@@ -37,8 +39,6 @@ body {
 
   font-size: 12px;
   font-family: monospace;
-
-  text-align: start;
 }
 
 .page-break-avoid {

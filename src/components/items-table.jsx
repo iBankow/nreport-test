@@ -1,22 +1,14 @@
 import { formatCurrency } from "../utils";
 
 export function ItemsTable({ items, type }) {
-  function categoryFormat(category) {
-    const traducoes = {
-      service: "Serviço",
-      material: "Material",
-    };
-    return traducoes[category] || traducoes.material;
-  }
-
   return (
-    <div className="break-inside-auto mb-4">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4 border-b">
+    <div className="break-inside-auto">
+      <h3 className="font-semibold text-gray-900">
         {items && items.length > 1 ? "Itens" : "Item"}
         {type === "service" ? " da Ordem de Serviço" : " do Orçamento"}
       </h3>
-      <div className="border rounded-md">
-        <table className="w-full border-collapse text-sm rounded-md break-inside-auto">
+      <div className="border rounded-md text-xs">
+        <table className="w-full border-collapse rounded-md break-inside-auto">
           <thead className="item-row border-b ">
             <tr className="bg-gray-100">
               <th className="p-2 text-center">Item</th>
@@ -32,16 +24,14 @@ export function ItemsTable({ items, type }) {
               items.map((item, index) => (
                 <tr
                   key={item.id || index}
-                  className="item-row border-b last:border-none  border-gray-300"
+                  className="item-row border-b last:border-none odd:bg-white even:bg-gray-100"
                 >
                   <td className="p-1.5 font-medium text-center">{index + 1}</td>
                   <td className="p-1.5 w-1/2" width="50%">
                     {item.description || "Descrição do Item"}
                   </td>
                   <td className="p-1.5 text-center">
-                    <span className="px-2 py-1 rounded text-xs bg-blue-100 text-blue-800">
-                      {categoryFormat(item.category)}
-                    </span>
+                    <CategoryBadge category={item.category} />
                   </td>
                   <td className="p-1.5 text-center">{item.quantity}</td>
                   <td className="p-1.5 text-right">
@@ -67,5 +57,25 @@ export function ItemsTable({ items, type }) {
         </table>
       </div>
     </div>
+  );
+}
+
+function CategoryBadge({ category }) {
+  const traducoes = {
+    service: "Serviço",
+    material: "Material",
+  };
+  const label = traducoes[category] || traducoes.material;
+
+  const colors = {
+    service: "bg-blue-100 text-blue-800",
+    material: "bg-orange-100 text-orange-800",
+  };
+  const colorClasses = colors[category] || colors.material;
+
+  return (
+    <span className={`px-2 py-1 rounded text-xs ${colorClasses}`}>
+      {label}
+    </span>
   );
 }

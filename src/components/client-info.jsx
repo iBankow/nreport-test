@@ -1,6 +1,7 @@
 import { formatDocument, formatPhone, formatZipCode } from "../utils";
 
 import { FileText, Mail, Phone } from "lucide-react";
+import { Separator } from "./ui/separator";
 
 export function ClientInfo({ customer }) {
   if (!customer) {
@@ -8,30 +9,34 @@ export function ClientInfo({ customer }) {
   }
 
   return (
-    <div className="text-sm bg-gray-100 p-3 rounded-md">
-      <h3 className="text-lg font-semibold text-gray-900 ">Dados do Cliente</h3>
-      <div className="mt-1">
-        <div className="border-b pb-3 mb-3">
-          <p className="font-bold mb-1">{customer.name}</p>
-          <span className="text-xs text-gray-50 px-2 py-1 bg-blue-400 rounded">
-            {customer.type === "company" ? "Pessoa Jurídica" : "Pessoa Física"}
-          </span>
+    <div className="text-sm w-full">
+      <h3 className="font-semibold text-gray-900">Dados do Cliente</h3>
+      <div className="bg-gray-100 p-3 rounded-md space-y-1">
+        <p className="font-bold mb-1">{customer.name}</p>
+        <Separator />
+        <div className="grid grid-cols-2">
+          <div className="text-xs space-y-1">
+            <InfoRow value={customer.email} icon={Mail} />
+            <InfoRow value={formatPhone(customer.phone)} icon={Phone} />
+            <InfoRow
+              value={formatDocument(customer.document)}
+              icon={FileText}
+            />
+          </div>
+          {customer.address && (
+            <>
+              <p className="text-xs leading-relaxed uppercase">
+                {customer.address.street}, {customer.address.number || "S/N"}
+                {customer.address.complement &&
+                  `, ${customer.address.complement}`}
+                <br />
+                {customer.address.neighborhood} - {customer.address.city}/
+                {customer.address.state} -{" "}
+                {formatZipCode(customer.address.zipcode) || "Não informado"}
+              </p>
+            </>
+          )}
         </div>
-        <div className="text-xs space-y-1">
-          <InfoRow value={customer.email} icon={Mail} />
-          <InfoRow value={formatPhone(customer.phone)} icon={Phone} />
-          <InfoRow value={formatDocument(customer.document)} icon={FileText} />
-        </div>
-        {customer.address && (
-          <p className="border-t pt-3 mt-3 text-xs leading-relaxed uppercase">
-            {customer.address.street}, {customer.address.number || "S/N"}
-            {customer.address.complement && `, ${customer.address.complement}`}
-            <br />
-            {customer.address.neighborhood} - {customer.address.city}/
-            {customer.address.state} -{" "}
-            {formatZipCode(customer.address.zipcode) || "Não informado"}
-          </p>
-        )}
       </div>
     </div>
   );

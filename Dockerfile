@@ -1,72 +1,53 @@
-# Build stage
-FROM node:18-alpine AS builder
+FROM node:20-bookworm-slim AS node-deps
 
 WORKDIR /app
 
-# Instalar Python e dependências do WeasyPrint
-RUN apk add --no-cache \
-    python3 \
-    py3-pip \
-    gcc \
-    musl-dev \
-    python3-dev \
-    cairo-dev \
-    jpeg-dev \
-    openjpeg-dev \
-    zlib-dev
-
-# Copiar package files
 COPY package*.json ./
+RUN npm ci --omit=dev && npm cache clean --force
 
-# Instalar dependências Node
-RUN npm ci --only=production && \
-    npm ci --only=development
 
-# Instalar dependências Python (usar --break-system-packages é seguro em Docker)
-RUN pip install --no-cache-dir --break-system-packages weasyprint
+FROM python:3.11-slim-bookworm AS runtime
 
-# Copiar código-fonte
-COPY . .
-
-# Runtime stage
-FROM node:18-alpine
+ENV NODE_ENV=production \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PORT=8080
 
 WORKDIR /app
 
-# Instalar Python runtime e dependências do WeasyPrint (sem ferramentas de build)
-RUN apk add --no-cache \
-    python3 \
-    py3-pip \
-    cairo \
-    cairo-gobject \
-    fontconfig \
-    freetype \
-    glib \
-    gobject-introspection \
-    jpeg \
-    libffi \
-    openjpeg \
-    pango \
-    ttf-dejavu \
-    zlib
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    ca-certificates \
+    curl \
+    gnupg \
+    libcairo2 \
+    libpango-1.0-0 \
+    libpangocairo-1.0-0 \
+    libgdk-pixbuf-2.0-0 \
+    libjpeg62-turbo \
+    libopenjp2-7 \
+    libtiff6 \
+    libwebp7 \
+    zlib1g \
+    shared-mime-info \
+    fonts-dejavu-core \
+    fonts-liberation2 \
+    && rm -rf /var/lib/apt/lists/* \
+    && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get update && apt-get install -y --no-install-recommends nodejs \
+    && apt-get purge -y --auto-remove curl gnupg \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copiar do builder: node_modules, arquivo de dependências e código
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app . 
+COPY requirements.txt ./
+RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r requirements.txt
 
-# Instalar apenas WeasyPrint no runtime (usa wheels do builder)
-RUN pip install --no-cache-dir --break-system-packages weasyprint
+RUN useradd --create-home --uid 10001 appuser
 
-# Criar diretório para PDFs
-RUN mkdir -p /app/pdfs /app/temp
+COPY --from=node-deps /app/node_modules ./node_modules
+COPY --chown=appuser:appuser . .
 
-# Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=40s --retries=3 \
-    CMD node -e "require('http').get('http://localhost:3000', (r) => {if (r.statusCode !== 200) throw new Error(r.statusCode)})"
+USER appuser
 
-# Expor porta
-EXPOSE 3000
+EXPOSE 8080
 
-# Executar aplicação
-CMD ["npm", "start"]
+CMD ["node_modules/.bin/babel-node", "src/index.js"]

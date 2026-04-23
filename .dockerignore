@@ -16,3 +16,4 @@ coverage
 prettier.config.js
 jest.config.ts
 tsconfig.json
+.venv

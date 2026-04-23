@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@page {
+  size: A4;
+  margin: 5mm;
+
+  @top-left {
+    content: element(header-left);
+  }
+
+  @top-right {
+    content: element(header-right);
+  }
+
+  @bottom-left {
+    content: element(footer-left);
+  }
+
+  @bottom-center {
+    content: element(footer-center);
+  }
+
+  @bottom-right {
+    content: element(footer-right);
+  }
+}
+
+body {
+  font-family: "Geist", sans-serif;
+  break-inside: auto;
+  page-break-inside: auto;
+}
+
+.footer,
+.header {
+  color: oklch(0.556 0 0);
+
+  font-size: 12px;
+  font-family: monospace;
+}
+
+.page-break-avoid {
+  page-break-inside: avoid;
+}
+
+.header-left {
+  position: running(header-left);
+}
+
+.header-right {
+  position: running(header-right);
+}
+
+.footer-left {
+  position: running(footer-left);
+}
+
+.footer-right {
+  position: running(footer-right);
+}
+
+.footer-center {
+  position: running(footer-center);
+}
+
+.pageNumber:before {
+  content: counter(page);
+}
+
+.totalPages:before {
+  content: counter(pages);
+}

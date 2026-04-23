@@ -39,23 +39,17 @@ export function Report({ data }) {
           total={data.total}
         />
 
-        {data.description && (
-          <div className="page-break-avoid text-sm w-full">
-            <h3 className="font-semibold text-gray-900">
-              Descrição do Serviço
-            </h3>
+        {data.notes && (
+          <div className="text-sm w-full">
+            <h3 className="font-semibold text-gray-900">Observações</h3>
             <div className="bg-gray-100 p-4 rounded-lg">
-              <p className="text-gray-700 whitespace-pre-line">
-                {data.description}
-              </p>
+              <p className="text-gray-700 whitespace-pre-line">{data.notes}</p>
             </div>
           </div>
         )}
 
         <div className="page-break-avoid text-sm text-gray-600">
-          <h3 className="font-semibold text-gray-600">
-            Termos e Condições
-          </h3>
+          <h3 className="font-semibold text-gray-600">Termos e Condições</h3>
           <ul className="list-disc list-inside p-3">
             <li>
               Esta ordem de serviço está sujeita às condições gerais de

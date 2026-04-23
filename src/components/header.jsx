@@ -24,9 +24,13 @@ export function Header({ organization }) {
 
   function generateLogoUrl() {
     if (company.logo) {
-      const fileExtension = `_96x96` + company.logo.slice(-4);
-
-      const baseUrl = company.logo.slice(0, -4);
+      const dotIndex = company.logo.lastIndexOf(".");
+      const hasExtension = dotIndex > -1;
+      const extension = hasExtension ? company.logo.slice(dotIndex) : "";
+      const baseUrl = hasExtension
+        ? company.logo.slice(0, dotIndex)
+        : company.logo;
+      const fileExtension = `_96x96${extension}`;
 
       return process.env.CDN_URL + "/" + baseUrl + fileExtension;
     }

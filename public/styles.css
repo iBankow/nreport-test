@@ -4,7 +4,7 @@
 
 @page {
   size: A4;
-  margin: 5mm;
+  margin: 10mm 5mm;
 
   @top-left {
     content: element(header-left);

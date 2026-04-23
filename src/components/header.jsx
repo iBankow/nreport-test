@@ -24,7 +24,7 @@ export function Header({ organization }) {
 
   function generateLogoUrl() {
     if (company.logo) {
-      const fileExtension = `_64x64` + company.logo.slice(-4);
+      const fileExtension = `_96x96` + company.logo.slice(-4);
 
       const baseUrl = company.logo.slice(0, -4);
 

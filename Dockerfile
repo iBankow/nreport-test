@@ -1,4 +1,4 @@
-FROM node:20-bullseye-slim AS node-deps
+FROM node:20-bookworm-slim AS node-deps
 
 WORKDIR /app
 
@@ -6,7 +6,7 @@ COPY package*.json ./
 RUN npm ci --omit=dev && npm cache clean --force
 
 
-FROM python:3.11-slim-bullseye AS runtime
+FROM python:3.11-slim-bookworm AS runtime
 
 ENV NODE_ENV=production \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -22,11 +22,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libcairo2 \
     libpango-1.0-0 \
     libpangocairo-1.0-0 \
-    libgdk-pixbuf2.0-0 \
+    libgdk-pixbuf-2.0-0 \
     libjpeg62-turbo \
     libopenjp2-7 \
-    libtiff5 \
-    libwebp6 \
+    libtiff6 \
+    libwebp7 \
     zlib1g \
     shared-mime-info \
     fonts-dejavu-core \
@@ -34,16 +34,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/* \
     && curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get update && apt-get install -y --no-install-recommends nodejs \
+    && apt-get purge -y --auto-remove curl gnupg \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
 RUN pip install --no-cache-dir --upgrade pip setuptools wheel \
     && pip install --no-cache-dir -r requirements.txt
 
-COPY --from=node-deps /app/node_modules ./node_modules
-COPY . .
+RUN useradd --create-home --uid 10001 appuser
 
-RUN useradd --create-home --uid 10001 appuser && chown -R appuser:appuser /app
+COPY --from=node-deps /app/node_modules ./node_modules
+COPY --chown=appuser:appuser . .
 
 USER appuser
 

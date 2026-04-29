@@ -59,6 +59,43 @@ app.post("/report", async (req, res) => {
   }
 });
 
+app.post("/", async (req, res) => {
+  const data = req.body;
+
+  const cssPath = path.resolve("public/output.css");
+  const css = fs.readFileSync(cssPath, "utf8");
+
+  const html = renderToString(<Report data={data} />);
+
+  const title = `${data.type === "budget" ? "Orçamento" : "Ordem"} - ${data.number.replace("/", "-")}`;
+
+  const fullHtml = generateReportHTML({
+    title: title,
+    content: html,
+    styles: css,
+  });
+
+  try {
+    if (process.env.NODE_ENV === "development") {
+      const tempHtmlPath = path.join(
+        `tmp/report-${data.sid}-${data.type}.html`,
+      );
+      fs.writeFileSync(tempHtmlPath, fullHtml);
+    }
+
+    // Gerar PDF usando WeasyPrint via Python
+    const pdfBuffer = await generatePDF(fullHtml);
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `inline; filename="document.pdf"`);
+    res.setHeader("Content-Length", pdfBuffer.length);
+    res.send(pdfBuffer);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send(error);
+  }
+});
+
 app.listen(PORT, () => {
   console.log(
     `Servidor rodando na porta http://${process.env.HOST || "localhost"}:${PORT}`,
